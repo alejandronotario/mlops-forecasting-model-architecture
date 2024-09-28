@@ -21,6 +21,16 @@ import mlflow
 from mlflow.models import infer_signature
 
 
+param_grid = {  
+    'changepoint_prior_scale': [0.001, 0.01, 0.1, 0.5],
+    'seasonality_prior_scale': [0.01, 0.1, 1.0, 10.0],
+    'holidays_prior_scale': [0.01, 0.1, 1.0, 10.0],
+    'seasonality_mode': ['additive', 'multiplicative']
+    }
+
+
+
+
 def train(ti):
     gas_data = ti.xcom_pull(key="gas_data", task_ids="load_data")
     df = pd.DataFrame(json.loads(gas_data))

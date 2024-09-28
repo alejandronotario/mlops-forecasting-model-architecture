@@ -1,4 +1,4 @@
-""" Dag para cargar los datos iniciales """
+""" Dag para cargar los datos iniciales. """
 import sys
 sys.path.append("/opt/airflow/")
 import airflow
@@ -33,11 +33,15 @@ get_gas_data = PythonOperator(
 
 load_gas_data = PythonOperator( 
         task_id="load_gas_data",
-          op_kwargs={
+        op_kwargs={
         'db_host': HOST_NAME,
         'db_name': DATABASE,
         'db_user': USER_NAME,
-        'db_pswd': PASSWORD
+        'db_pswd': PASSWORD,
+        'key': 'gas_data',
+        'task_id': 'get_gas_data',
+        'fecha_ini': '2022-01-02',
+        'fecha_fin': '2022-01-30'
     }, python_callable=load_data, dag=dag
     )
 
