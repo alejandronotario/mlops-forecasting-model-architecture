@@ -1,14 +1,5 @@
-from airflow import DAG
-import airflow
-from airflow.operators.python import PythonOperator
-from airflow.operators.dummy_operator import DummyOperator
-from airflow.operators.postgres_operator import PostgresOperator
-from airflow.hooks.postgres_hook import PostgresHook
 import json
-import requests
 from datetime import datetime
-import time
-import psycopg2
 from sqlalchemy import create_engine
 import logging
 import pandas as pd
@@ -19,26 +10,36 @@ import itertools
 import numpy as np
 import mlflow
 from mlflow.models import infer_signature
+import logging
 
+logger = logging.getLogger(__name__)
+
+
+# param_grid = {  
+#     'changepoint_prior_scale': [0.001, 0.01, 0.1, 0.5],
+#     'seasonality_prior_scale': [0.01, 0.1, 1.0, 10.0],
+#     'holidays_prior_scale': [0.01, 0.1, 1.0, 10.0],
+#     'seasonality_mode': ['additive', 'multiplicative']
+#     }
 
 param_grid = {  
-    'changepoint_prior_scale': [0.001, 0.01, 0.1, 0.5],
-    'seasonality_prior_scale': [0.01, 0.1, 1.0, 10.0],
-    'holidays_prior_scale': [0.01, 0.1, 1.0, 10.0],
-    'seasonality_mode': ['additive', 'multiplicative']
+    'changepoint_prior_scale': [0.001],
+    'seasonality_prior_scale': [0.1],
+    'holidays_prior_scale': [0.1],
+    'seasonality_mode': ['multiplicative']
     }
 
 
-
-
-def train(ti):
-    gas_data = ti.xcom_pull(key="gas_data", task_ids="load_data")
+def train(**kwargs):
+    ti = kwargs['ti']
+    gas_data = ti.xcom_pull(key=kwargs['key'], task_ids=kwargs['task_id'])
+    logger.info(type(gas_data), gas_data)
     df = pd.DataFrame(json.loads(gas_data))
-    df['ds'] = pd.to_datetime(df['ds'], format='%d/%m/%Y')
+    df['ds'] = pd.to_datetime(df['ds'], format="%Y-%m-%d")
     initial = int(0.7*(df.shape[0]))
     horizon = initial / 3
     period = horizon / 4 
-    input_example = df[:int(0.1*(df.shape[0]))]
+    input_example = df[:int(0.05*(df.shape[0]))]
     mlflow.set_experiment("time series")
 
     with mlflow.start_run() as run:

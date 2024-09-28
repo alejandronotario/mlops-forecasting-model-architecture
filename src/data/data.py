@@ -142,7 +142,7 @@ def read_first_record_from_postgres(ti):
 
 def load_interval_data(**kwargs):
     """
-    Lectura de último registro de Postgres        
+    Lectura de conjunto de datos según fechas      
     """
     ti = kwargs['ti']
     first_record = ti.xcom_pull(key=kwargs['key'], task_ids=kwargs['task_id'])

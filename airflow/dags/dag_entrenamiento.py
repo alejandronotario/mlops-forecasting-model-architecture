@@ -31,7 +31,7 @@ get_last_record = PythonOperator(
     python_callable=read_last_record_from_postgres, dag=dag
 )
 
-load_interval_data = PythonOperator(
+load_train_data = PythonOperator(
     task_id="load_interval_data",
     op_kwargs={
         'db_host': HOST_NAME,
@@ -47,7 +47,11 @@ load_interval_data = PythonOperator(
 
 model_train = PythonOperator(
     task_id="model_train",
+    op_kwargs={
+        'key': 'gas_data',
+        'task_id': 'load_interval_data',
+    },
     python_callable=train, dag=dag
 )
 
-[get_first_record, get_last_record] >> load_interval_data
+[get_first_record, get_last_record] >> load_train_data >> model_train

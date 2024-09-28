@@ -40,8 +40,8 @@ load_gas_data = PythonOperator(
         'db_pswd': PASSWORD,
         'key': 'gas_data',
         'task_id': 'get_gas_data',
-        'fecha_ini': '2022-01-02',
-        'fecha_fin': '2022-01-30'
+        'fecha_ini': '2018-01-01',
+        'fecha_fin': '2024-05-30'
     }, python_callable=load_data, dag=dag
     )
 
