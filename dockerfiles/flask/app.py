@@ -1,38 +1,41 @@
 import os
 import json
 import boto3
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 import mlflow
 import pandas as pd
 from pandas.tseries.offsets import DateOffset
-
-# import mlflow
-# import sys
-# from airflow.hooks.postgres_hook import PostgresHook
-# from prophet import Prophet
-# from prophet.diagnostics import cross_validation
-# from prophet.diagnostics import performance_metrics
-
-
-# s3 = boto3.resource('s3')
-
-# bucket = s3.Bucket('prueba-15-sept-mlops')
-
-# key = '/1/1b44b22a64f84d95a31779c3d8fb3adb/artifacts/prophet_2/'
-# objs = list(bucket.objects.filter(Prefix=key))
-
-# for obj in objs:
-#     #print(obj.key)
-#     out_name = obj.key.split('/')[-1]
-#     bucket.download_file(obj.key, out_name)  
-
+from flask import Flask, render_template, request, redirect, send_file
+from s3_helper import list_all_files, download, upload
 
 app = Flask(__name__)
 
-# client = boto3.client('s3')
-# bucket = "prueba-15-sept-mlops"
-# cur_path = os.getcwd()
+UPLOAD_FOLDER = "upload_files"
+BUCKET = "prueba-15-sept-mlops"
+#PREFIX = "1/1b44b22a64f84d95a31779c3d8fb3adb/artifacts/prophet_2"
+@app.route('/')
+def start():
+    return "MODELO PROPHET LISTO PARA ACTUALIZAR Y EJECUTAR"
 
+@app.route("/home")
+def home():
+    contents = list_all_files(bucket=BUCKET)
+    return render_template('s3_storage_dashboard.html', contents=contents)
+
+@app.route("/upload", methods=['POST'])
+def upload_files():
+    if request.method == "POST":
+        f = request.files['file']
+        f.save(os.path.join(UPLOAD_FOLDER, f.filename))
+        upload(f"upload_files/{f.filename}", BUCKET, f.filename)
+        return redirect("/home")
+
+
+@app.route("/download/<filename>", methods=['GET'])
+def download_files(filename):
+    if request.method == 'GET':
+        output = download(filename, BUCKET)
+        return send_file(output, as_attachment=True)
 
 @app.route("/predict", methods=['GET', 'POST'])
 def predict():

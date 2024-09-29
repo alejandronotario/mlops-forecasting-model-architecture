@@ -162,5 +162,5 @@ cython_debug/
 #.idea/
 
 # minio
-minio_data/*
+minio_data/
 .minio.sys

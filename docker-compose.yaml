@@ -38,9 +38,13 @@ x-airflow-common:
 
 services:
     web:
-      build: ./dockerfiles/flask
-      ports:
-        - "5001:5000"
+        build: ./dockerfiles/flask
+        ports:
+          - "5001:5000"
+        environment:      
+          AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+          AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+          AWS_DEFAULT_REGION: ${AWS_REGION}
 
 #  ########################################################################################################
 #  # Contenedor con base de datos postgresql de mlflow
@@ -69,9 +73,9 @@ services:
           - "5000:5000"
         environment:
           # The following credentials allow connection to the S3 server.
-           AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
-           AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-           AWS_DEFAULT_REGION: ${AWS_REGION}
+          AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+          AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+          AWS_DEFAULT_REGION: ${AWS_REGION}
            #AWS_ACCESS_KEY_ID: ${MINIO_ACCESS_KEY}
            #AWS_SECRET_ACCESS_KEY: ${MINIO_SECRET_ACCESS_KEY}
 
