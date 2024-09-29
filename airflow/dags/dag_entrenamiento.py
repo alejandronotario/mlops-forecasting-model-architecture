@@ -6,7 +6,7 @@ from airflow import DAG
 from airflow.operators.python import PythonOperator
 import logging
 from src.data.data import read_first_record_from_postgres, read_last_record_from_postgres, load_interval_data
-from src.model.model_train import train
+from src.model.model_train import train, execute
 
 logger = logging.getLogger(__name__)
 
@@ -54,4 +54,11 @@ model_train = PythonOperator(
     python_callable=train, dag=dag
 )
 
-[get_first_record, get_last_record] >> load_train_data >> model_train
+model_execute = PythonOperator(
+    task_id="model_execute",
+    python_callable=execute, dag=dag
+)
+
+[get_first_record, get_last_record] >> load_train_data >> model_train >> model_execute
+
+#model_execute

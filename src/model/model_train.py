@@ -11,6 +11,7 @@ import numpy as np
 import mlflow
 from mlflow.models import infer_signature
 import logging
+from airflow.hooks.postgres_hook import PostgresHook
 
 logger = logging.getLogger(__name__)
 
@@ -73,12 +74,30 @@ def train(**kwargs):
         mlflow.log_params(best_params)
         model = Prophet(**best_params).fit(df)
         train = model.history
-        predictions = model.predict(model.make_future_dataframe(30))
-        signature = infer_signature(train, predictions)
-        #mlflow.log_params(m.get_params())
+        future = model.make_future_dataframe(periods=30)
+        logger.info(future)
         mlflow.prophet.log_model(pr_model=model, artifact_path="prophet",
                                  input_example=input_example,
-                                 registered_model_name="prophet",
-                                 signature=signature)
+                                 registered_model_name="prophet")
         model_uri = mlflow.get_artifact_uri("prophet")
     return run_id, model_uri
+
+def execute():
+    hook = PostgresHook(postgres_conn_id="postgres")
+    df = hook.get_pandas_df(
+        sql="SELECT * FROM public.gas_supply where ds between '2022-02-01' and '2022-02-20'"
+        )
+    model_name = "prophet"
+    model_version = "latest"
+    df = df[:int(0.1*(df.shape[0]))]
+    df['ds'] = pd.to_datetime(df['ds'], format="%Y-%m-%d")
+    model_uri = f"models:/{model_name}/{model_version}"
+    model = mlflow.pyfunc.load_model(model_uri)
+    #logger.info(df1)
+    forecast = model.predict(df)
+    logger.info(forecast)
+    y_true = df['y'].values
+    logger.info(y_true)
+    y_pred = forecast['yhat'].values
+    logger.info(y_pred)
+    
