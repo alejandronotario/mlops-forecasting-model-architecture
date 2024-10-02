@@ -11,11 +11,11 @@ from s3_helper import list_all_files, download, upload
 app = Flask(__name__)
 
 UPLOAD_FOLDER = "upload_files"
-BUCKET = "prueba-15-sept-mlops"
+BUCKET = "models-bucket-30-sept"
 #PREFIX = "1/1b44b22a64f84d95a31779c3d8fb3adb/artifacts/prophet_2"
 @app.route('/')
 def start():
-    return "MODELO PROPHET LISTO PARA ACTUALIZAR Y EJECUTAR"
+    return "MODELO PROPHET"
 
 @app.route("/home")
 def home():

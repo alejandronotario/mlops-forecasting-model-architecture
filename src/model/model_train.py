@@ -12,8 +12,11 @@ import mlflow
 from mlflow.models import infer_signature
 import logging
 from airflow.hooks.postgres_hook import PostgresHook
+import requests
 
 logger = logging.getLogger(__name__)
+ALERTMANAGER_URL = "http://172.17.0.1:9093/api/v1/alerts"
+
 
 
 # param_grid = {  
@@ -59,6 +62,8 @@ def train(**kwargs):
             rmses.append(df_p['rmse'].values[0])
         logger.info(rmses)
         rmse_min = int(min(rmses))
+        alert_payload = {"alerta": rmse_min}
+        requests.post(ALERTMANAGER_URL, json=alert_payload)
         logger.info(rmse_min)
         #metrics_dict = {'rmse': rmse_min}
         mlflow.log_metric("rmse", rmse_min)

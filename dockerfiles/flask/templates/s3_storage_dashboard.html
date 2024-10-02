@@ -1,22 +1,22 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>File Operation in S3</title>
+    <title>Transferencia de ficheros de S3</title>
   </head>
   <body>
     <div class="content">
-        <h3 align ='center'>File Operations in S3</h3>
+        <h3 align ='center'>Transferencia de ficheros de S3</h3>
 
         <div>
-          <h3>1. Please Upload file to S3 here </h3>
+          <h3>1. Subir fichero a S3 </h3>
           <form method="POST" action="/upload" enctype=multipart/form-data>
             <input type=file name=file>
             <input type=submit value=Upload>
           </form>
         </div>
         <div>
-          <h3>2. List of All files in the bucket:</h3>
-          <p>Download it by clicking on the links.</p>
+          <h3>2. Lista de ficheros en el bucket:</h3>
+          <p>Descargar pinchando en el enlace.</p>
           <ul>
             {% for item in contents %}
               <li>

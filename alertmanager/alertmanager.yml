@@ -1,0 +1,14 @@
+route:
+  receiver: 'mail'
+  repeat_interval: 4h
+  group_by: [ alertname ]
+
+
+receivers:
+  - name: 'mail'
+    email_configs:
+      - smarthost: 'smtp.gmail.com:465'
+        auth_username: 'alejandronotario@gmail.com'
+        auth_password: "TerminusyAnacreonte-2081"
+        from: 'alejandronotario@gmail.com'
+        to: 'alejandronotario@gmail.com'
