@@ -1,4 +1,4 @@
-# redesigned-octo-waffle
+# mlops-forecasting-model-architecture
 
 Se propone un infraestructura para entrenar modelos de Aprendizaje Automático
 
